@@ -1,5 +1,5 @@
-import Component from "./component";
+import { notFound } from "next/navigation";
 
 export default function Page() {
-  return <Component />;
+  return notFound();
 }

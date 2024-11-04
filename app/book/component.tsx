@@ -1,48 +1,39 @@
 "use client";
 
-import { Star, ShoppingCart, Search, Book, User, BookOpen } from "lucide-react";
+import { Star, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CldImage } from "next-cloudinary";
+import { Work } from "@/lib/api/getBookPage";
 
-export default function Component() {
+type Props = {
+  work: Work;
+  isbn: string;
+  series: {
+    title: string;
+    books: { title: string; part: number }[];
+  };
+  universe: {
+    name: string;
+    works: { title: string; id: string }[];
+  };
+};
+
+export default function Component({ work, isbn, series, universe }: Props) {
   const book = {
-    title: "The Midnight Library",
-    author: "Matt Haig",
-    coverImage: "/placeholder.svg?height=400&width=300",
+    title: work.title,
+    author: work.variantBooks[0].writtenByPeople[0].name,
+    coverImage: work.title.toLowerCase().replace(/ /g, "-"),
     rating: 4.5,
-    price: 14.99,
-    description:
-      "Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived.",
+    price:
+      work.variantBooks.find((book) => book.isbn === isbn)
+        ?.pricesCostsConnection.edges[0].properties.amount ?? -1,
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   };
 
   const recommendations = {
-    series: [
-      {
-        title: "How to Stop Time",
-        author: "Matt Haig",
-        coverImage: "/placeholder.svg?height=200&width=150",
-      },
-      {
-        title: "The Humans",
-        author: "Matt Haig",
-        coverImage: "/placeholder.svg?height=200&width=150",
-      },
-    ],
-    universe: [
-      {
-        title: "The Invisible Life of Addie LaRue",
-        author: "V.E. Schwab",
-        coverImage: "/placeholder.svg?height=200&width=150",
-      },
-      {
-        title: "The Starless Sea",
-        author: "Erin Morgenstern",
-        coverImage: "/placeholder.svg?height=200&width=150",
-      },
-    ],
     category: [
       {
         title: "The Time Traveler's Wife",
@@ -71,7 +62,7 @@ export default function Component() {
           <div className="overflow-hidden rounded-lg shadow-lg">
             <div className="relative w-full h-0 pb-[133%] transition-transform duration-300 ease-in-out hover:scale-110">
               <CldImage
-                src={"cld-sample-5"}
+                src={book.coverImage}
                 alt={`Cover of ${book.title}`}
                 width={500}
                 height={500}
@@ -115,6 +106,59 @@ export default function Component() {
               <TabsTrigger value="universe">Same Universe</TabsTrigger>
               <TabsTrigger value="category">Same Category</TabsTrigger>
             </TabsList>
+            <TabsContent value="series">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {series.books.map((serieBook, index) => {
+                  return (
+                    <Card key={index}>
+                      <CardContent className="p-4">
+                        <div className="relative">
+                          <CldImage
+                            src={serieBook.title
+                              .toLowerCase()
+                              .replaceAll(/ /g, "-")}
+                            width={150}
+                            height={150}
+                            alt={`Cover of ${serieBook.title}`}
+                            className="w-full h-auto rounded-md mb-2"
+                            crop={{ type: "auto", aspectRatio: "4:6" }}
+                          />
+                          <div className="absolute top-0 right-0 px-4 py-2 bg-slate-200">
+                            Part {serieBook.part}
+                          </div>
+                        </div>
+                        <h3 className="font-semibold">{serieBook.title}</h3>
+                        <p className="text-sm text-gray-600">{book.author}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </TabsContent>
+            <TabsContent value="universe">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {universe.works.map((universeBook, index) => {
+                  return (
+                    <Card key={index}>
+                      <CardContent className="p-4">
+                        <CldImage
+                          src={universeBook.title
+                            .toLowerCase()
+                            .replaceAll(/ /g, "-")}
+                          width={150}
+                          height={150}
+                          alt={`Cover of ${universeBook.title}`}
+                          className="w-full h-auto rounded-md mb-2"
+                          crop={{ type: "auto", aspectRatio: "4:6" }}
+                        />
+                        <h3 className="font-semibold">{universeBook.title}</h3>
+                        <p className="text-sm text-gray-600">{book.author}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </TabsContent>
             {Object.entries(recommendations).map(([key, books]) => (
               <TabsContent key={key} value={key}>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
