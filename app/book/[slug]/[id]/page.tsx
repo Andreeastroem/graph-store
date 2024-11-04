@@ -1,5 +1,6 @@
 import { getBookPage } from "@/lib/api/getBookPage";
 import Component from "../../component";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: Promise<{
@@ -10,14 +11,14 @@ type Props = {
 };
 
 export default async function Page({ params, searchParams }: Props) {
-  const { id } = await params;
+  const { id, slug } = await params;
   const { isbn } = await searchParams;
 
-  if (typeof isbn !== "string") {
-    throw new Error("isbn is not a string");
-  }
-
   const data = await getBookPage(id);
+
+  if (typeof isbn !== "string") {
+    redirect(`/book/${slug}/${id}?isbn=${data.variantBooks[0].isbn}`);
+  }
 
   const series = {
     title: data.partOfSeriesConnection.edges[0].node.name,
@@ -25,6 +26,7 @@ export default async function Page({ params, searchParams }: Props) {
       return {
         title: book.title,
         part: book.partOfSeriesConnection.edges[0].properties.part,
+        id: book.id,
       };
     }),
   };

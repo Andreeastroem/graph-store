@@ -7,13 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CldImage } from "next-cloudinary";
 import { Work } from "@/lib/api/getBookPage";
+import Link from "next/link";
 
 type Props = {
   work: Work;
   isbn: string;
   series: {
     title: string;
-    books: { title: string; part: number }[];
+    books: { title: string; part: number; id: string }[];
   };
   universe: {
     name: string;
@@ -110,27 +111,34 @@ export default function Component({ work, isbn, series, universe }: Props) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {series.books.map((serieBook, index) => {
                   return (
-                    <Card key={index}>
-                      <CardContent className="p-4">
-                        <div className="relative">
-                          <CldImage
-                            src={serieBook.title
-                              .toLowerCase()
-                              .replaceAll(/ /g, "-")}
-                            width={150}
-                            height={150}
-                            alt={`Cover of ${serieBook.title}`}
-                            className="w-full h-auto rounded-md mb-2"
-                            crop={{ type: "auto", aspectRatio: "4:6" }}
-                          />
-                          <div className="absolute top-0 right-0 px-4 py-2 bg-slate-200">
-                            Part {serieBook.part}
+                    <Link
+                      href={`/book/${serieBook.title
+                        .toLowerCase()
+                        .replaceAll(" ", "-")}/${serieBook.id}`}
+                      key={index}
+                    >
+                      <Card>
+                        <CardContent className="p-4">
+                          <div className="relative">
+                            <CldImage
+                              src={serieBook.title
+                                .toLowerCase()
+                                .replaceAll(/ /g, "-")}
+                              width={150}
+                              height={150}
+                              alt={`Cover of ${serieBook.title}`}
+                              className="w-full h-auto rounded-md mb-2"
+                              crop={{ type: "auto", aspectRatio: "4:6" }}
+                            />
+                            <div className="absolute top-0 right-0 px-4 py-2 bg-slate-200">
+                              Part {serieBook.part}
+                            </div>
                           </div>
-                        </div>
-                        <h3 className="font-semibold">{serieBook.title}</h3>
-                        <p className="text-sm text-gray-600">{book.author}</p>
-                      </CardContent>
-                    </Card>
+                          <h3 className="font-semibold">{serieBook.title}</h3>
+                          <p className="text-sm text-gray-600">{book.author}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   );
                 })}
               </div>
