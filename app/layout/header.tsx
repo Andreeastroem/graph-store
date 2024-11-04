@@ -1,9 +1,7 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
+import Image from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 
 export default function Header() {
@@ -12,7 +10,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <Link href="/" className="flex items-center">
-            <CldImage
+            <Image
               src="logo"
               alt="BookStore Logo"
               className="h-10 w-10 mr-2"

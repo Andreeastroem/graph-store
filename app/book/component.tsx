@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CldImage } from "next-cloudinary";
 import { Work } from "@/lib/api/getBookPage";
 import Link from "next/link";
+import Image from "@/components/ui/image";
 
 type Props = {
   work: Work;
@@ -62,7 +62,7 @@ export default function Component({ work, isbn, series, universe }: Props) {
         <div className="grid md:grid-cols-2 gap-8">
           <div className="overflow-hidden rounded-lg shadow-lg">
             <div className="relative w-full h-0 pb-[133%] transition-transform duration-300 ease-in-out hover:scale-110">
-              <CldImage
+              <Image
                 src={book.coverImage}
                 alt={`Cover of ${book.title}`}
                 width={500}
@@ -120,7 +120,7 @@ export default function Component({ work, isbn, series, universe }: Props) {
                       <Card>
                         <CardContent className="p-4">
                           <div className="relative">
-                            <CldImage
+                            <Image
                               src={serieBook.title
                                 .toLowerCase()
                                 .replaceAll(/ /g, "-")}
@@ -149,7 +149,7 @@ export default function Component({ work, isbn, series, universe }: Props) {
                   return (
                     <Card key={index}>
                       <CardContent className="p-4">
-                        <CldImage
+                        <Image
                           src={universeBook.title
                             .toLowerCase()
                             .replaceAll(/ /g, "-")}
@@ -173,7 +173,7 @@ export default function Component({ work, isbn, series, universe }: Props) {
                   {books.map((book, index) => (
                     <Card key={index}>
                       <CardContent className="p-4">
-                        <CldImage
+                        <Image
                           src={"cld-sample-4"}
                           width={150}
                           height={150}
