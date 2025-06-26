@@ -6,11 +6,7 @@ export async function getBookPage(id: string) {
 
   const response = await fetchFromApi<BookPageType>(query, { id });
 
-  console.log("response", response.data);
-
-  const bookPage = response.data.works[0];
-
-  return bookPage;
+  return response;
 }
 
 export type Work = {

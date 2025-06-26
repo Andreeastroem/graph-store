@@ -20,9 +20,19 @@ type Props = {
     name: string;
     works: { title: string; id: string }[];
   };
+  categoryRecommendations: Array<{
+    title: string;
+    id: string;
+  }>;
 };
 
-export default function Component({ work, isbn, series, universe }: Props) {
+export default function Component({
+  work,
+  isbn,
+  series,
+  universe,
+  categoryRecommendations,
+}: Props) {
   const book = {
     title: work.title,
     author: work.variantBooks[0].writtenByPeople[0].name,
@@ -100,122 +110,150 @@ export default function Component({ work, isbn, series, universe }: Props) {
         </div>
 
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">You might also like</h2>
-          <Tabs defaultValue="series" className="w-full">
-            <TabsList>
-              <TabsTrigger value="series">Same Series</TabsTrigger>
-              <TabsTrigger value="universe">Same Universe</TabsTrigger>
-              <TabsTrigger value="category">Same Category</TabsTrigger>
-            </TabsList>
-            <TabsContent value="series">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {series.books.map((serieBook, index) => {
-                  return (
-                    <Link
-                      href={`/book/${serieBook.title
-                        .toLowerCase()
-                        .replaceAll(" ", "-")}/${serieBook.id}`}
-                      key={index}
-                    >
-                      <Card>
-                        <CardContent className="p-4">
-                          <div className="relative">
-                            <Image
-                              src={serieBook.title
-                                .toLowerCase()
-                                .replaceAll(/ /g, "-")}
-                              width={150}
-                              height={150}
-                              alt={`Cover of ${serieBook.title}`}
-                              className="w-full h-auto rounded-md mb-2"
-                              crop={{ type: "auto", aspectRatio: "4:6" }}
-                            />
-                            <div className="absolute top-0 right-0 px-4 py-2 bg-slate-200">
-                              Part {serieBook.part}
+          <h2>Our recommendations</h2>
+          <div className="flex gap-4 overflow-x-scroll">
+            {categoryRecommendations.map((book, index) => (
+              <Card key={index}>
+                <CardContent className="p-4">
+                  <Image
+                    src={book.title.toLowerCase().replaceAll(/ /g, "-")}
+                    width={150}
+                    height={150}
+                    alt={`Cover of ${book.title}`}
+                    className="w-full h-auto rounded-md mb-2"
+                    crop={{
+                      type: "auto",
+                      aspectRatio: "4:6",
+                    }}
+                  />
+                  <h3 className="font-semibold">{book.title}</h3>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-4">You might also like</h2>
+            <Tabs defaultValue="series" className="w-full">
+              <TabsList>
+                <TabsTrigger value="series">Same Series</TabsTrigger>
+                <TabsTrigger value="universe">Same Universe</TabsTrigger>
+                <TabsTrigger value="category">Same Category</TabsTrigger>
+              </TabsList>
+              <TabsContent value="series">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {series.books.map((serieBook, index) => {
+                    return (
+                      <Link
+                        href={`/book/${serieBook.title
+                          .toLowerCase()
+                          .replaceAll(" ", "-")}/${serieBook.id}`}
+                        key={index}
+                      >
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="relative">
+                              <Image
+                                src={serieBook.title
+                                  .toLowerCase()
+                                  .replaceAll(/ /g, "-")}
+                                width={150}
+                                height={150}
+                                alt={`Cover of ${serieBook.title}`}
+                                className="w-full h-auto rounded-md mb-2"
+                                crop={{ type: "auto", aspectRatio: "4:6" }}
+                              />
+                              <div className="absolute top-0 right-0 px-4 py-2 bg-slate-200">
+                                Part {serieBook.part}
+                              </div>
                             </div>
-                          </div>
-                          <h3 className="font-semibold">{serieBook.title}</h3>
+                            <h3 className="font-semibold">{serieBook.title}</h3>
+                            <p className="text-sm text-gray-600">
+                              {book.author}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+              <TabsContent value="universe">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {universe.works.map((universeBook, index) => {
+                    return (
+                      <Card key={index}>
+                        <CardContent className="p-4">
+                          <Image
+                            src={universeBook.title
+                              .toLowerCase()
+                              .replaceAll(/ /g, "-")}
+                            width={150}
+                            height={150}
+                            alt={`Cover of ${universeBook.title}`}
+                            className="w-full h-auto rounded-md mb-2"
+                            crop={{ type: "auto", aspectRatio: "4:6" }}
+                          />
+                          <h3 className="font-semibold">
+                            {universeBook.title}
+                          </h3>
                           <p className="text-sm text-gray-600">{book.author}</p>
                         </CardContent>
                       </Card>
-                    </Link>
-                  );
-                })}
-              </div>
-            </TabsContent>
-            <TabsContent value="universe">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {universe.works.map((universeBook, index) => {
-                  return (
-                    <Card key={index}>
-                      <CardContent className="p-4">
-                        <Image
-                          src={universeBook.title
-                            .toLowerCase()
-                            .replaceAll(/ /g, "-")}
-                          width={150}
-                          height={150}
-                          alt={`Cover of ${universeBook.title}`}
-                          className="w-full h-auto rounded-md mb-2"
-                          crop={{ type: "auto", aspectRatio: "4:6" }}
-                        />
-                        <h3 className="font-semibold">{universeBook.title}</h3>
-                        <p className="text-sm text-gray-600">{book.author}</p>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </TabsContent>
-            {Object.entries(recommendations).map(([key, books]) => (
-              <TabsContent key={key} value={key}>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {books.map((book, index) => (
-                    <Card key={index}>
-                      <CardContent className="p-4">
-                        <Image
-                          src={"cld-sample-4"}
-                          width={150}
-                          height={150}
-                          alt={`Cover of ${book.title}`}
-                          className="w-full h-auto rounded-md mb-2"
-                          crop={{
-                            type: "auto",
-                            aspectRatio: "4:6",
-                          }}
-                        />
-                        <h3 className="font-semibold">{book.title}</h3>
-                        <p className="text-sm text-gray-600">{book.author}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
+                    );
+                  })}
                 </div>
               </TabsContent>
-            ))}
-          </Tabs>
-        </div>
+              {Object.entries(recommendations).map(([key, books]) => (
+                <TabsContent key={key} value={key}>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {books.map((book, index) => (
+                      <Card key={index}>
+                        <CardContent className="p-4">
+                          <Image
+                            src={"cld-sample-4"}
+                            width={150}
+                            height={150}
+                            alt={`Cover of ${book.title}`}
+                            className="w-full h-auto rounded-md mb-2"
+                            crop={{
+                              type: "auto",
+                              aspectRatio: "4:6",
+                            }}
+                          />
+                          <h3 className="font-semibold">{book.title}</h3>
+                          <p className="text-sm text-gray-600">{book.author}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
 
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">Similar Authors</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {similarAuthors.map((author, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <Avatar className="w-24 h-24 mb-2">
-                  <AvatarImage
-                    src={author.image}
-                    alt={author.name}
-                    className={avatarColors[index % avatarColors.length]}
-                  />
-                  <AvatarFallback>
-                    {author.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <p className="text-center font-semibold">{author.name}</p>
-              </div>
-            ))}
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold mb-4">Similar Authors</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {similarAuthors.map((author, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  <Avatar className="w-24 h-24 mb-2">
+                    <AvatarImage
+                      src={author.image}
+                      alt={author.name}
+                      className={avatarColors[index % avatarColors.length]}
+                    />
+                    <AvatarFallback>
+                      {author.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className="text-center font-semibold">{author.name}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

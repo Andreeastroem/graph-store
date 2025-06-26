@@ -6,7 +6,11 @@ import Image from "@/components/ui/image";
 import Link from "next/link";
 
 export default async function Home() {
-  const data = await getHomePage();
+  const response = await getHomePage();
+  if (response.type === "error") {
+    return <main>{response.message}</main>;
+  }
+  const data = response.data;
   return (
     <main className="flex-grow">
       <div className="container mx-auto px-4 py-8">

@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 export async function getHomePage() {
   const response = await fetchFromApi<data>(query, {});
 
-  return response.data;
+  return response;
 }
 
 type data = {

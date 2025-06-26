@@ -14,15 +14,21 @@ export default async function Page({ params, searchParams }: Props) {
   const { id, slug } = await params;
   const { isbn } = await searchParams;
 
-  const data = await getBookPage(id);
+  const response = await getBookPage(id);
+
+  if (response.type === "error") {
+    return <div>{response.message}</div>;
+  }
+
+  const work = response.data.works[0];
 
   if (typeof isbn !== "string") {
-    redirect(`/book/${slug}/${id}?isbn=${data.variantBooks[0].isbn}`);
+    redirect(`/book/${slug}/${id}?isbn=${work.variantBooks[0].isbn}`);
   }
 
   const series = {
-    title: data.partOfSeriesConnection.edges[0].node.name,
-    books: data.partOfSeriesConnection.edges[0].node.worksPartOf.map((book) => {
+    title: work.partOfSeriesConnection.edges[0].node.name,
+    books: work.partOfSeriesConnection.edges[0].node.worksPartOf.map((book) => {
       return {
         title: book.title,
         part: book.partOfSeriesConnection.edges[0].properties.part,
@@ -32,13 +38,58 @@ export default async function Page({ params, searchParams }: Props) {
   };
 
   const universe = {
-    name: data.universesContains[0].name,
-    works: data.universesContains?.[0].containsWorks.filter(
-      (work) => work.id !== id
-    ),
+    name: work.universesContains[0].name,
+    works: work.universesContains?.[0].containsWorks.filter((w) => w.id !== id),
   };
 
-  return (
-    <Component work={data} isbn={isbn} series={series} universe={universe} />
+  const categoryRecommendations = extractBooksFromCategory(
+    work.classificationsPrimary?.[0],
+    work.classificationsNotPrimary
   );
+
+  return (
+    <Component
+      work={work}
+      isbn={isbn}
+      series={series}
+      universe={universe}
+      categoryRecommendations={categoryRecommendations}
+    />
+  );
+}
+
+type primaryClassification = {
+  name: string;
+  primaryWorks: {
+    id: string;
+    title: string;
+  }[];
+};
+type nonPrimaryClassification = {
+  name: string;
+  notPrimaryWorks: {
+    id: string;
+    title: string;
+  }[];
+};
+
+function extractBooksFromCategory(
+  primary: primaryClassification,
+  nonPrimary: nonPrimaryClassification[]
+) {
+  const unionOfBooks = new Map<string, { id: string; title: string }>();
+
+  primary.primaryWorks.forEach((book) => {
+    unionOfBooks.set(book.id, book);
+  });
+
+  nonPrimary.forEach((category) => {
+    category.notPrimaryWorks.forEach((book) => {
+      if (!unionOfBooks.has(book.id)) {
+        unionOfBooks.set(book.id, book);
+      }
+    });
+  });
+
+  return Array.from(unionOfBooks.values());
 }
